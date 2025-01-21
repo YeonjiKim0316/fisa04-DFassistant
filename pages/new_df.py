@@ -28,7 +28,7 @@ def load_data(filename):
     else:
         return
 
-filename = st.text_input('찾을 정보가 들어있는 파일명을 입력하세요: ')
+filename = st.text_input('찾을 정보가 들어있는 파일명을 입력하세요: AdidasSalesdata.xlsx / spotify-streaming-top-50-south-korea.csv')
 
 # 캐싱된 데이터프레임을 불러옴
 if filename:
