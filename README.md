@@ -1,0 +1,3 @@
+- 데이터 출처:
+    - Adidas_sales_Data: https://www.kaggle.com/datasets/vishwas199728/adidas-sales-data
+    - Spotify Top 50 Playlist Songs | @anxods: https://www.kaggle.com/datasets/anxods/spotify-top-50-playlist-songs-anxods?resource=download
