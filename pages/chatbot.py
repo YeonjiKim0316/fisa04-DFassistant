@@ -19,20 +19,20 @@ def build_definition():
     cols = ", ".join(df.columns.astype(str))
     return f"DataFrame df with columns: {cols}\n"
 
-
-def exec_first_code_block(md: str, env=None):
+def exec_first_code_block(md: str, namespace=None):
     """
-    Markdown 문자열에서 첫 번째 triple-backtick 코드 블록만 추출해 실행하고,
-    그 결과 namespace를 반환합니다.
+    Extracts and executes the first triple-backtick code block from a Markdown string.
+    Requires df (and optionally pandas as pd) to be provided in the namespace.
+    Returns the updated namespace after execution.
     """
-    pattern = r'^```(?:\w+)?\s*\n(.*?)(?=^```)'  # 첫 줄에 backtick, 코드 내용 추출,
+    pattern = r'^```(?:\w+)?\s*\n(.*?)(?=^```)'  # DOTALL + MULTILINE
     match = re.search(pattern, md, re.DOTALL | re.MULTILINE)
     if not match:
         raise ValueError("``` 코드 블록을 찾을 수 없습니다.")
     code = match.group(1)
-    namespace = env if env is not None else {}
-    exec(code, namespace)
-    return namespace
+    ns = namespace if namespace is not None else {}
+    exec(code, ns)  # use ns as globals
+    return ns
 
 st.title("Pandas Query Chatbot 🧠")
 
