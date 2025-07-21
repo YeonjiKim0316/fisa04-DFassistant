@@ -31,8 +31,8 @@ def exec_first_code_block(md: str, namespace=None):
         raise ValueError("``` 코드 블록을 찾을 수 없습니다.")
     code = match.group(1)
     ns = namespace if namespace is not None else {}
-    exec(code, ns)  # use ns as globals
-    return ns
+     # use ns as globals
+    return st.write(exec(code, ns)) 
 
 st.title("Pandas Query Chatbot 🧠")
 
@@ -82,7 +82,6 @@ if prompt:
     # eval 실행 및 결과 출력
     try:
         result = exec_first_code_block(assistant_resp)
-        print(result)
         st.write(result)
     except Exception as e:
         st.error(f"코드 실행 오류: {e}")
