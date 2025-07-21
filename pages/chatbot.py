@@ -5,7 +5,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import re
 
-# Load API key
+# API 키 로드
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -15,53 +15,43 @@ def load_data():
 
 df = load_data()
 
-def build_definition():
+def table_definition_prompt():
     cols = ", ".join(df.columns.astype(str))
     return f"DataFrame df with columns: {cols}\n"
 
 def exec_first_code_block(md: str, namespace=None):
-    """
-    Extracts and executes the first triple-backtick code block from a Markdown string.
-    Requires df (and optionally pandas as pd) to be provided in the namespace.
-    Returns the updated namespace after execution.
-    """
-    pattern = r'^```(?:\w+)?\s*\n(.*?)(?=^```)'  # DOTALL + MULTILINE
+    pattern = r'^```(?:\w+)?\s*\n(.*?)(?=^```)'
     match = re.search(pattern, md, re.DOTALL | re.MULTILINE)
     if not match:
         raise ValueError("``` 코드 블록을 찾을 수 없습니다.")
     code = match.group(1)
-    ns = namespace if namespace is not None else {}
-     # use ns as globals
-    if "df" not in ns:
-        ns["df"] = df          # df from outer scope
-    if "pd" not in ns:
-        ns["pd"] = pd
-    return st.write(exec(code, ns)) 
 
-st.title("Pandas Query Chatbot 🧠")
+    ns = namespace or {}
+    ns.update({"df": df, "pd": pd})
+    exec(code, ns)
+    return ns
 
-# 세션 상태 초기화
+st.title("Pandas Chatbot (ChatGPT 스타일)")
+
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# 이전 대화 출력
+# 이전 메시지 표시
 for msg in st.session_state.history:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# 사용자 입력 받기 
+# 사용자 입력
 prompt = st.chat_input("질문을 입력하세요:")
 if prompt:
-    # 사용자 메시지 처리
     st.session_state.history.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # GPT 호출 및 스트리밍 응답
-    with st.status("GPT 생성 중..."):
+    with st.status("GPT 응답 생성 중..."):
         messages = [
-            {"role": "system", "content": "You are a Pandas code generator specialized in one-liner boolean indexing."},
-            {"role": "system", "content": build_definition()},
+            {"role": "system", "content": "You are a Pandas query assistant. Return a one-line boolean indexing starting with df."},
+            {"role": "system", "content": table_definition_prompt()},
         ] + st.session_state.history
 
         stream = client.chat.completions.create(
@@ -76,16 +66,21 @@ if prompt:
         with st.chat_message("assistant"):
             assistant_resp = st.write_stream(stream)
 
-    # 챗 히스토리에 assistant 응답 저장
     st.session_state.history.append({"role": "assistant", "content": assistant_resp})
-
-    # 코드 블록으로 출력
     st.code(assistant_resp)
 
-    
-    # eval 실행 및 결과 출력
+    # 코드 실행
     try:
-        result = exec_first_code_block(assistant_resp)
-        st.write(result)
+        ns = exec_first_code_block(assistant_resp)
+        # df.info()처럼 stdout 출력하는 함수라면 아래와 같이 실행 결과를 캡처할 수 있습니다.
+        import io, sys
+        buf = io.StringIO()
+        sys_stdout = sys.stdout
+        sys.stdout = buf
+        if "df" in ns:
+            ns["df"].info()
+        sys.stdout = sys_stdout
+        st.text(buf.getvalue())
+
     except Exception as e:
         st.error(f"코드 실행 오류: {e}")
