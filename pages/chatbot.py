@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
+import re
 
 # Load API key
 load_dotenv()
@@ -18,6 +19,21 @@ def build_definition():
     cols = ", ".join(df.columns.astype(str))
     return f"DataFrame df with columns: {cols}\n"
 
+
+def exec_first_code_block(md: str, env=None):
+    """
+    Markdown 문자열에서 첫 번째 triple-backtick 코드 블록만 추출해 실행하고,
+    그 결과 namespace를 반환합니다.
+    """
+    pattern = r'^```(?:\w+)?\s*\n(.*?)(?=^```)'  # 첫 줄에 backtick, 코드 내용 추출,
+    match = re.search(pattern, md, re.DOTALL | re.MULTILINE)
+    if not match:
+        raise ValueError("``` 코드 블록을 찾을 수 없습니다.")
+    code = match.group(1)
+    namespace = env if env is not None else {}
+    exec(code, namespace)
+    return namespace
+
 st.title("Pandas Query Chatbot 🧠")
 
 # 세션 상태 초기화
@@ -29,7 +45,7 @@ for msg in st.session_state.history:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# 사용자 입력 받기 (와일러스 제거)
+# 사용자 입력 받기 
 prompt = st.chat_input("질문을 입력하세요:")
 if prompt:
     # 사용자 메시지 처리
@@ -62,9 +78,10 @@ if prompt:
     # 코드 블록으로 출력
     st.code(assistant_resp)
 
+    
     # eval 실행 및 결과 출력
     try:
-        result = eval(assistant_resp)
+        result = exec_first_code_block(assistant_resp)
         st.write(result)
     except Exception as e:
         st.error(f"코드 실행 오류: {e}")
