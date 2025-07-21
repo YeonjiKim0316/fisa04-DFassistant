@@ -32,7 +32,6 @@ def exec_first_code_block(md: str, namespace=None):
     code = match.group(1)
     ns = namespace if namespace is not None else {}
      # use ns as globals
-        ns = namespace or {}
     if "df" not in ns:
         ns["df"] = df          # df from outer scope
     if "pd" not in ns:
