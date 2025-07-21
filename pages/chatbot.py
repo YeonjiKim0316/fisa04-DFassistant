@@ -30,6 +30,7 @@ def exec_first_code_block(md: str, namespace=None):
     if not match:
         raise ValueError("``` 코드 블록을 찾을 수 없습니다.")
     code = match.group(1)
+    global df
     ns = namespace if namespace is not None else {}
      # use ns as globals
     return st.write(exec(code, ns)) 
