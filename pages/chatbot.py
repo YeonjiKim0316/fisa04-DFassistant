@@ -59,6 +59,6 @@ if prompt:
 
     # 코드 실행
     try:
-        st.write(eval(assistant_resp))
+        st.code(eval(assistant_resp))
     except Exception as e:
-        st.error(f"코드 실행 오류: {e}")
+        st.error(f"코드가 아닌 결과로 실행은 되지 않았습니다.: {e}")
