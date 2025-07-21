@@ -20,12 +20,6 @@ def table_definition_prompt():
     return f"DataFrame df with columns: {cols}\n"
 
 def exec_first_code_block(md: str, namespace=None):
-    pattern = r'^```(?:\w+)?\s*\n(.*?)(?=^```)'
-    match = re.search(pattern, md, re.DOTALL | re.MULTILINE)
-    if not match:
-        raise ValueError("``` 코드 블록을 찾을 수 없습니다.")
-    code = match.group(1)
-
     ns = namespace or {}
     ns.update({"df": df, "pd": pd})
     exec(code, ns)
