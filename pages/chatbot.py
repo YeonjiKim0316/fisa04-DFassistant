@@ -19,12 +19,6 @@ def table_definition_prompt():
     cols = ", ".join(df.columns.astype(str))
     return f"DataFrame df with columns: {cols}\n"
 
-def exec_first_code_block(md: str, namespace=None):
-    ns = namespace or {}
-    ns.update({"df": df, "pd": pd})
-    exec(code, ns)
-    return ns
-
 st.title("Pandas Chatbot (ChatGPT 스타일)")
 
 if "history" not in st.session_state:
@@ -65,16 +59,6 @@ if prompt:
 
     # 코드 실행
     try:
-        ns = exec_first_code_block(assistant_resp)
-        # df.info()처럼 stdout 출력하는 함수라면 아래와 같이 실행 결과를 캡처할 수 있습니다.
-        import io, sys
-        buf = io.StringIO()
-        sys_stdout = sys.stdout
-        sys.stdout = buf
-        if "df" in ns:
-            ns["df"].info()
-        sys.stdout = sys_stdout
-        st.text(buf.getvalue())
-
+        st.write(eval(answer))
     except Exception as e:
         st.error(f"코드 실행 오류: {e}")
