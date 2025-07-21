@@ -58,7 +58,23 @@ if prompt:
     st.code(assistant_resp)
 
     # 코드 실행
+    # 코드 실행 부분 수정
     try:
-        st.code(eval(assistant_resp))
+        code_str = assistant_resp.strip()
+    
+        # 함수 정의 형태인지 간단 검증
+        is_func = bool(re.match(r'^df\..*\(', code_str))
+    
+        if is_func:
+            # 함수 호출 시 출력이 없으면 print()로 감싸기
+            st.code(f"print({code_str})")
+            eval(f"print({code_str})")
+        else:
+            # 일반 표현식일 경우 그대로 실행
+            st.code(code_str)
+            res = eval(code_str)
+            st.write(res)
+    
     except Exception as e:
-        st.error(f"코드가 아닌 결과로 실행은 되지 않았습니다.: {e}")
+        pass
+
