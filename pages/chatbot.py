@@ -82,6 +82,7 @@ if prompt:
     # eval 실행 및 결과 출력
     try:
         result = exec_first_code_block(assistant_resp)
+        print(result)
         st.write(result)
     except Exception as e:
         st.error(f"코드 실행 오류: {e}")
