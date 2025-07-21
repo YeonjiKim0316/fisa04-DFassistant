@@ -67,7 +67,15 @@ if prompt:
     
         if is_func:
             # 함수 호출 시 출력이 없으면 print()로 감싸기
-            st.write(eval(f"print({code_str})"))
+            from io import StringIO
+            import sys
+            
+            # stdout을 임시로 StringIO로 교체
+            old_stdout = sys.stdout
+            mystdout = StringIO()
+            sys.stdout = mystdout
+            res = eval(code_str)
+            st.write(res)
         else:
             # 일반 표현식일 경우 그대로 실행
             res = eval(code_str)
