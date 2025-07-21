@@ -14,14 +14,13 @@ def load_data():
 
 df = load_data()
 
-# 유틸: 프롬프트에 df 구조 설명
 def build_definition():
     cols = ", ".join(df.columns.astype(str))
     return f"DataFrame df with columns: {cols}\n"
 
 st.title("Pandas Query Chatbot 🧠")
 
-# 초기화
+# 세션 상태 초기화
 if "history" not in st.session_state:
     st.session_state.history = []
 
@@ -30,20 +29,21 @@ for msg in st.session_state.history:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# 사용자 입력 받기
-if prompt := st.chat_input("질문을 입력하세요:"):
-    # 사용자의 질문을 history에 추가
+# 사용자 입력 받기 (와일러스 제거)
+prompt = st.chat_input("질문을 입력하세요:")
+if prompt:
+    # 사용자 메시지 처리
     st.session_state.history.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # GPT 요청 전 status spinner 표시
+    # GPT 호출 및 스트리밍 응답
     with st.status("GPT 생성 중..."):
-        # API 호출: streaming=True 사용
         messages = [
-            {"role": "system", "content": "You are a Pandas code generator."},
+            {"role": "system", "content": "You are a Pandas code generator specialized in one-liner boolean indexing."},
             {"role": "system", "content": build_definition()},
         ] + st.session_state.history
+
         stream = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,
@@ -51,18 +51,18 @@ if prompt := st.chat_input("질문을 입력하세요:"):
             temperature=0.5,
             stream=True,
         )
-        # GPT 응답을 스트리밍으로 작성
+
         assistant_resp = ""
         with st.chat_message("assistant"):
             assistant_resp = st.write_stream(stream)
 
-    # 응답을 history에 저장
+    # 챗 히스토리에 assistant 응답 저장
     st.session_state.history.append({"role": "assistant", "content": assistant_resp})
 
-    # GPT 출력 코드를 호스팅
+    # 코드 블록으로 출력
     st.code(assistant_resp)
 
-    # 실행 및 결과 출력
+    # eval 실행 및 결과 출력
     try:
         result = eval(assistant_resp)
         st.write(result)
