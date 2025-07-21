@@ -67,11 +67,9 @@ if prompt:
     
         if is_func:
             # 함수 호출 시 출력이 없으면 print()로 감싸기
-            st.code(f"print({code_str})")
             eval(f"print({code_str})")
         else:
             # 일반 표현식일 경우 그대로 실행
-            st.code(code_str)
             res = eval(code_str)
             st.write(res)
     
