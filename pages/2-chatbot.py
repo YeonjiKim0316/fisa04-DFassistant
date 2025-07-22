@@ -1,3 +1,8 @@
+# !pip install groq
+
+# https://console.groq.com/docs/quickstart
+# https://console.groq.com/playground
+
 import streamlit as st
 import pandas as pd
 import os
