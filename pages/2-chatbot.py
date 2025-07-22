@@ -3,6 +3,14 @@
 # https://console.groq.com/docs/quickstart
 # https://console.groq.com/playground
 
+'''
+변경사항: 
+st.session_state.history에 역할과 내용을 저장해 챗봇처럼 대화 이력을 유지.
+화면에 과거 메시지 반복 출력해 대화 형식 구현.
+GPT 요청 시 누적 이력을 그대로 전달 → 문맥 기반 응답 가능.
+GPT 응답은 실시간 스트리밍으로 보여주고, 코드 실행 결과도 바로 확인.
+'''
+
 import streamlit as st
 import pandas as pd
 import os
@@ -33,7 +41,10 @@ st.title("Pandas Chatbot (Gemma2 모델)")
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# 이전 메시지 출력
+# 이전 메시지 표시
+# Streamlit은 기본적으로 매 요청마다 새로 실행되지만, st.session_state를 사용하면 사용자 세션 동안 유지되는 값을 저장할 수 있습니다.
+# history라는 key가 세션 상태에 없다면 빈 리스트로 초기화합니다.
+# 이 리스트는 사용자와 어시스턴트 간의 대화(메시지)를 차곡차곡 쌓아 나갑니다.
 for msg in st.session_state.history:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
