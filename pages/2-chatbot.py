@@ -83,7 +83,7 @@ if prompt:
     st.session_state.history.append({"role": "assistant", "content": full_response})
     st.code(full_response)
 
-    # 코드 실행
+    # 코드 실행 - 결과를 return이 아닌 print 하는 경우에는 print되는 표준출력화면을 문자열로 스위치해서 사용
     try:
         code_str = full_response.strip()
         is_func = bool(re.match(r'^df\..*\(', code_str))
