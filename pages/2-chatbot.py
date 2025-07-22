@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-from openai import OpenAI
+# from openai import OpenAI
 from dotenv import load_dotenv
 import re
 
@@ -14,8 +14,16 @@ GPT 응답은 실시간 스트리밍으로 보여주고, 코드 실행 결과도
 """
 
 # API 키 로드
+# load_dotenv()
+# client = OpenAI(api_key=os.getenv("GROQ_API_KEY"))
+from groq import Groq
+from dotenv import load_dotenv
+
 load_dotenv()
-client = OpenAI(api_key=os.getenv("GROQ_API_KEY"))
+
+api_key = os.getenv('GROQ_API_KEY')
+
+client = Groq()
 
 @st.cache_data
 def load_data():
