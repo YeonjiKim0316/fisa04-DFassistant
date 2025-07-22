@@ -62,7 +62,7 @@ if prompt:
         ] + st.session_state.history
 
         stream = client.chat.completions.create(
-            model="qwen/qwen3-32b",
+             model="gemma2-9b-it",
             messages=messages,
             max_tokens=200,
             temperature=0.5,
