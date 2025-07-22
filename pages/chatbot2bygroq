@@ -37,7 +37,7 @@ def table_definition_prompt(df):
             '''.format(",".join(str(x) for x in df.columns))
     
     return prompt
-
+st.header("groq"
 nlp_text = st.text_input('질문을 입력하세요: ')
 accept = st.button('요청')
 
