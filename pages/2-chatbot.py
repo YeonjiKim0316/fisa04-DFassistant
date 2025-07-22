@@ -59,7 +59,7 @@ if prompt:
     with st.status("Gemma2 응답 생성 중..."):
         messages = [
             {"role": "system", "content": "You are a Pandas query assistant. Return a one-line boolean indexing starting with df. The answer should start with df and contains only code by one line, not any explanation or ``` for copy."},
-            {"role": "system", "content": table_definition_prompt()},
+            {"role": "user", "content": table_definition_prompt()},
         ] + st.session_state.history
 
         # 스트리밍 생성
