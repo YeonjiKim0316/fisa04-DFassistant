@@ -15,7 +15,7 @@ GPT 응답은 실시간 스트리밍으로 보여주고, 코드 실행 결과도
 
 # API 키 로드
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("GROQ_API_KEY"))
 
 @st.cache_data
 def load_data():
@@ -54,7 +54,7 @@ if prompt:
         ] + st.session_state.history
 
         stream = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="qwen/qwen3-32b",
             messages=messages,
             max_tokens=200,
             temperature=0.5,
