@@ -102,4 +102,5 @@ if prompt:
             st.write(res)
 
     except Exception as e:
-        st.error(f"코드 실행 오류: {e}")
+        # st.error(f"코드 실행 오류: {e}")
+        pass
